@@ -62,11 +62,37 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/updateBlog/:id',async(req,res)=>{
+            const id = req.params.id
+            const query = {_id:new ObjectId(id)}
+            const result = await blogCollections.findOne(query)
+            res.send(result)
+        })
+
+        app.patch('/updateBlog/:id',async(req,res)=>{
+            const id = req.params.id
+            const query = {_id:new ObjectId(id)}
+            const updateBlog = req.body
+            
+            const updateDoc = {
+                $set:{
+                    title:updateBlog.title,
+                    image:updateBlog.image,
+                    category:updateBlog.category,
+                    content:updateBlog.content,
+                    postedDate:updateBlog.postedDate
+                }
+            }
+            const result = await blogCollections.updateOne(query,updateDoc)
+            res.send(result)
+        })
 
 
+        
 
-        // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+
+            // Send a ping to confirm a successful connection
+            await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
