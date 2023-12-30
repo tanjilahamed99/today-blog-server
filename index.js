@@ -3,6 +3,7 @@ const app = express()
 const port = process.env.PORT || 5000
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 
 
@@ -13,13 +14,9 @@ app.get('/', (req, res) => {
     res.send('welcome to my website')
 })
 
-// todayBlog
-// 
-
-
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = "mongodb+srv://todayBlog:P2P41Rexjb2vMDZY@cluster0.8mn4lkn.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.8mn4lkn.mongodb.net/?retryWrites=true&w=majority`
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -41,7 +38,7 @@ async function run() {
         // jwt
         app.post('/jwt', (req, res) => {
             const info = req.body
-            const token = jwt.sign(info, 'secret', { expiresIn: '1h' })
+            const token = jwt.sign(info, process.env.TOKEN_SECRET, { expiresIn: '1h' })
             res.send( token )
 
         })
