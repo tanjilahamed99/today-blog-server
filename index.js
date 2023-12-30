@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://todayBlog:P2P41Rexjb2vMDZY@cluster0.8mn4lkn.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -39,6 +39,26 @@ async function run() {
 
         app.get('/blogs', async (req, res) => {
             const result = await blogCollections.find().toArray()
+            res.send(result)
+        })
+
+        app.get('/myBlogs', async (req, res) => {
+            const email = req.query.email
+            const query = { email: email }
+            const result = await blogCollections.find(query).toArray()
+            res.send(result)
+        })
+
+        app.post('/blogs', async (req, res) => {
+            const newBlog = req.body
+            const result = await blogCollections.insertOne(newBlog)
+            res.send(result)
+        })
+
+        app.delete('/myBlogs/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await blogCollections.deleteOne(query)
             res.send(result)
         })
 
