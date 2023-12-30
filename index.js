@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const port = process.env.PORT || 5000
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
 
 
 
@@ -37,6 +38,15 @@ async function run() {
         const blogCollections = client.db("todayBlog").collection("blogs");
 
 
+        // jwt
+        app.post('/jwt', (req, res) => {
+            const info = req.body
+            const token = jwt.sign(info, 'secret', { expiresIn: '1h' })
+            res.send( token )
+
+        })
+
+
         app.get('/blogs', async (req, res) => {
             const result = await blogCollections.find().toArray()
             res.send(result)
@@ -62,37 +72,37 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/updateBlog/:id',async(req,res)=>{
+        app.get('/updateBlog/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id:new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await blogCollections.findOne(query)
             res.send(result)
         })
 
-        app.patch('/updateBlog/:id',async(req,res)=>{
+        app.patch('/updateBlog/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id:new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const updateBlog = req.body
-            
+
             const updateDoc = {
-                $set:{
-                    title:updateBlog.title,
-                    image:updateBlog.image,
-                    category:updateBlog.category,
-                    content:updateBlog.content,
-                    postedDate:updateBlog.postedDate
+                $set: {
+                    title: updateBlog.title,
+                    image: updateBlog.image,
+                    category: updateBlog.category,
+                    content: updateBlog.content,
+                    postedDate: updateBlog.postedDate
                 }
             }
-            const result = await blogCollections.updateOne(query,updateDoc)
+            const result = await blogCollections.updateOne(query, updateDoc)
             res.send(result)
         })
 
 
-        
 
 
-            // Send a ping to confirm a successful connection
-            await client.db("admin").command({ ping: 1 });
+
+        // Send a ping to confirm a successful connection
+        await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
