@@ -39,7 +39,7 @@ async function run() {
         app.post('/jwt', (req, res) => {
             const info = req.body
             const token = jwt.sign(info, process.env.TOKEN_SECRET, { expiresIn: '1h' })
-            res.send( token )
+            res.send(token)
 
         })
 
@@ -47,6 +47,15 @@ async function run() {
         app.get('/blogs', async (req, res) => {
             const result = await blogCollections.find().toArray()
             res.send(result)
+        })
+
+        app.get('/blog/:id', async (req, res) => {
+
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await blogCollections.findOne(query)
+            return res.send(result)
+
         })
 
         app.get('/myBlogs', async (req, res) => {
